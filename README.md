@@ -60,6 +60,13 @@ For a plainer Chinese introduction, see `docs/landing-page.zh.md`.
 
 中文说明见 `README.zh-CN.md`。
 
+## Website
+
+- English: http://www.adgwmuren.top/
+- Chinese: http://www.adgwmuren.top/zh-CN.html
+
+HTTPS is pending on GitHub Pages while the certificate is being issued.
+
 ## Install
 
 Requirements:

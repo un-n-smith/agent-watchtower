@@ -49,6 +49,13 @@ docs/interrupted-recovery-demo.zh-CN.md
 
 ## 安装方式
 
+官网：
+
+- 英文：http://www.adgwmuren.top/
+- 中文：http://www.adgwmuren.top/zh-CN.html
+
+HTTPS 证书还在 GitHub Pages 签发中，目前先用 HTTP。
+
 从 PyPI 安装：
 
 ```bash

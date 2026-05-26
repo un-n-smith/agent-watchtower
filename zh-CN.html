@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Agent Watchtower 中文介绍</title>
+    <meta
+      name="description"
+      content="Agent Watchtower 是一个本地 CLI，让 AI 编程助手中断后知道做到哪、下一步做什么、产物在哪里。"
+    />
+    <link rel="alternate" hreflang="en" href="http://www.adgwmuren.top/" />
+    <link rel="alternate" hreflang="zh-CN" href="http://www.adgwmuren.top/zh-CN.html" />
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f7f8fb;
+        --ink: #17202a;
+        --muted: #5f6b7a;
+        --line: #d8dee8;
+        --panel: #ffffff;
+        --terminal: #151a22;
+        --teal: #0f766e;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          "PingFang SC", "Microsoft YaHei", sans-serif;
+        font-size: 16px;
+        line-height: 1.7;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .shell {
+        width: min(1040px, calc(100% - 40px));
+        margin: 0 auto;
+      }
+
+      header {
+        border-bottom: 1px solid var(--line);
+        background: rgba(247, 248, 251, 0.94);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        backdrop-filter: blur(12px);
+      }
+
+      .nav {
+        min-height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .brand {
+        font-weight: 800;
+      }
+
+      nav {
+        display: flex;
+        gap: 18px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      nav a {
+        text-decoration: none;
+      }
+
+      .hero {
+        padding: 72px 0 56px;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(340px, 0.8fr);
+        gap: 44px;
+        align-items: center;
+      }
+
+      h1 {
+        margin: 0;
+        max-width: 760px;
+        font-size: 52px;
+        line-height: 1.08;
+        letter-spacing: 0;
+      }
+
+      .lead {
+        margin: 24px 0 0;
+        max-width: 680px;
+        color: var(--muted);
+        font-size: 20px;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 30px;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 0 16px;
+        border-radius: 7px;
+        border: 1px solid var(--ink);
+        background: var(--ink);
+        color: #fff;
+        text-decoration: none;
+        font-weight: 700;
+      }
+
+      .button.secondary {
+        background: transparent;
+        color: var(--ink);
+      }
+
+      .terminal {
+        border-radius: 8px;
+        background: var(--terminal);
+        color: #e8eef7;
+        overflow: hidden;
+        border: 1px solid #2d3644;
+        box-shadow: 0 24px 60px rgba(23, 32, 42, 0.16);
+      }
+
+      pre {
+        margin: 0;
+        padding: 22px;
+        overflow-x: auto;
+        font-size: 14px;
+        line-height: 1.6;
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      }
+
+      section {
+        border-top: 1px solid var(--line);
+        padding: 64px 0;
+      }
+
+      h2 {
+        margin: 0 0 18px;
+        font-size: 34px;
+        line-height: 1.16;
+        letter-spacing: 0;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 28px;
+      }
+
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 22px;
+      }
+
+      .card strong {
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      .card p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .install {
+        background: var(--ink);
+        color: #fff;
+      }
+
+      .install p {
+        color: #cbd5e1;
+      }
+
+      .install pre {
+        margin-top: 24px;
+        background: #0f141b;
+        border: 1px solid #384252;
+        border-radius: 8px;
+      }
+
+      footer {
+        padding: 28px 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      @media (max-width: 820px) {
+        .shell {
+          width: min(100% - 28px, 1040px);
+        }
+
+        .nav {
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 14px 0;
+        }
+
+        .hero,
+        .grid {
+          grid-template-columns: 1fr;
+        }
+
+        h1 {
+          font-size: 38px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="shell nav">
+        <div class="brand">Agent Watchtower</div>
+        <nav aria-label="主导航">
+          <a href="#why">解决什么</a>
+          <a href="#install">安装</a>
+          <a href="index.html">English</a>
+          <a href="https://github.com/un-n-smith/agent-watchtower">GitHub</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <div class="shell hero">
+        <div>
+          <h1>让 AI 编程助手回来接着干。</h1>
+          <p class="lead">
+            Agent Watchtower 是一个很小的本地命令行工具。它记录目标、下一步安全动作、运行记录和产物位置，
+            让 Codex、Claude Code、Hermes、CodeWhale 这类编程 Agent 中断后不用从头解释。
+          </p>
+          <div class="actions">
+            <a class="button" href="#install">一分钟试用</a>
+            <a class="button secondary" href="https://github.com/un-n-smith/agent-watchtower">查看 GitHub</a>
+          </div>
+        </div>
+        <div class="terminal" aria-label="Agent Watchtower 终端演示">
+          <pre><code>$ agent-watchtower worker-status
+下一步：写一个本地产物
+
+$ agent-watchtower worker-run
+已完成一个小步骤
+
+$ agent-watchtower artifact-path
+work-artifacts/task-watchtower-demo-first-step.md</code></pre>
+        </div>
+      </div>
+
+      <section id="why">
+        <div class="shell">
+          <h2>它解决的不是“更聪明”，而是“不断片”。</h2>
+          <p>
+            终端关了、窗口换了、上下文太长了，下一次 Agent 经常不知道之前做到哪。
+            Watchtower 把最关键的工作交接信息留在本地普通文件里。
+          </p>
+          <div class="grid">
+            <div class="card">
+              <strong>目标</strong>
+              <p>这次工作原本要完成什么。</p>
+            </div>
+            <div class="card">
+              <strong>下一步</strong>
+              <p>醒来后先做哪一个安全的小动作。</p>
+            </div>
+            <div class="card">
+              <strong>产物</strong>
+              <p>上一次有用的 markdown 结果放在哪里。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="install" class="install">
+        <div class="shell">
+          <h2>安装和试用</h2>
+          <p>当前版本：0.1.1。只写本地文件，不需要后台服务，也不需要外部账号。</p>
+          <pre><code>python3 -m pip install agent-watchtower-core
+
+# 或者用 Homebrew：
+brew tap un-n-smith/tap
+brew install agent-watchtower
+
+ROOT="$(mktemp -d)"
+agent-watchtower --root "$ROOT" init
+agent-watchtower --root "$ROOT" worker-status
+agent-watchtower --root "$ROOT" worker-run
+agent-watchtower --root "$ROOT" artifact-path</code></pre>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="shell">
+        HTTPS 证书还在 GitHub Pages 签发中。反馈和中断恢复案例欢迎发到 GitHub Issues。
+      </div>
+    </footer>
+  </body>
+</html>
