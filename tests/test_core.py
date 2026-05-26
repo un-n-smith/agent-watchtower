@@ -95,7 +95,7 @@ class CoreLoopTests(unittest.TestCase):
         pyproject = tomllib.loads((root / "pyproject.toml").read_text(encoding="utf-8"))
 
         self.assertEqual(pyproject["project"]["name"], "agent-watchtower-core")
-        self.assertEqual(pyproject["project"]["version"], "0.1.2")
+        self.assertEqual(pyproject["project"]["version"], "0.1.3")
         self.assertEqual(pyproject["project"]["scripts"]["agent-watchtower"], "agent_watchtower.cli:main")
         self.assertEqual(pyproject["tool"]["uv"]["build-backend"]["module-name"], "agent_watchtower")
 
