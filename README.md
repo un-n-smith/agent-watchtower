@@ -8,7 +8,7 @@
 
 **Languages:** English | [Simplified Chinese](README.zh-CN.md)
 
-**Close the terminal, come back later, and your agent still knows where to resume.**
+**Close the terminal, come back later, and your agent can check where to resume.**
 
 You use Codex, Claude Code, Hermes, CodeWhale, or another coding agent for a few hours. Then the terminal closes, the session gets interrupted, or the next window starts cold.
 
@@ -39,7 +39,7 @@ In one sentence: Agent Watchtower is a tiny local CLI that lets coding agents le
 ROOT="$(mktemp -d)"
 agent-watchtower --root "$ROOT" init
 agent-watchtower --root "$ROOT" worker-status
-agent-watchtower --root "$ROOT" worker-run
+agent-watchtower --root "$ROOT" worker-run --result "Created the first continuity artifact and verified the local receipt."
 agent-watchtower --root "$ROOT" artifact-path
 ```
 
@@ -47,16 +47,17 @@ You should see one runnable task, one completed worker run, and one markdown art
 
 Close the terminal. Come back later. The local Watchtower files still say what happened and where the next session should resume.
 
-For a clearer before/after story, see `docs/interrupted-recovery-demo.md`.
+For a clearer before/after story, see the [interrupted recovery demo](https://github.com/un-n-smith/agent-watchtower/blob/main/docs/interrupted-recovery-demo.md).
 
 ## Two Readers
 
 There are two different readers:
 
 - Humans read this `README.md` to understand what the tool does and how to try it.
-- Coding agents read `AGENTS.md` to learn exactly when and how to call the five public commands.
+- Coding agents read [AGENTS.md](https://github.com/un-n-smith/agent-watchtower/blob/main/AGENTS.md) to learn exactly when and how to call the five public commands.
+- Agents that need a stricter prompt can read [AGENTS.structured.md](https://github.com/un-n-smith/agent-watchtower/blob/main/AGENTS.structured.md).
 
-The README explains the value. `AGENTS.md` explains the operating rules.
+The README explains the value. Agent instruction files explain the operating rules.
 
 ## Website
 
@@ -124,6 +125,7 @@ After install, the CLI is:
 
 ```bash
 agent-watchtower --help
+agent-watchtower --version
 ```
 
 For development without installing:
@@ -139,7 +141,7 @@ For the default local runtime:
 ```bash
 agent-watchtower init
 agent-watchtower worker-status
-agent-watchtower worker-run
+agent-watchtower worker-run --result "Created the first continuity artifact and verified the local receipt."
 agent-watchtower artifact-path
 ```
 
@@ -149,20 +151,50 @@ For a disposable demo runtime:
 ROOT="$(mktemp -d)"
 agent-watchtower --root "$ROOT" init
 agent-watchtower --root "$ROOT" worker-status
-agent-watchtower --root "$ROOT" worker-run
+agent-watchtower --root "$ROOT" worker-run --result "Created the first continuity artifact and verified the local receipt."
 agent-watchtower --root "$ROOT" artifact-path
 ```
 
 What to look for:
 
 - `worker-status` shows whether one task is runnable.
-- `worker-run` writes one markdown artifact and records one run receipt.
+- `worker-run --result ...` writes the actual work result into one markdown artifact and records one run receipt.
 - `artifact-path` prints the latest artifact path.
 - `run-receipts.json` records the completed bounded step and next safe action.
 
 After this, close the terminal and come back later. The point is that the local files still say what happened and where to resume.
 
-If you want a stricter release check, run:
+## Use it in a real project
+
+For project-local state, use a local Watchtower root:
+
+```bash
+agent-watchtower --root .watchtower init
+agent-watchtower --root .watchtower task-add \
+  --title "Inspect repository status" \
+  --next-action "run git status and summarize pending changes" \
+  --done-definition "artifact explains changed files and next safe action"
+```
+
+After doing the real work, record the actual result:
+
+```bash
+agent-watchtower --root .watchtower worker-run \
+  --result "Ran git status. Found docs changes in README.md and no source changes."
+agent-watchtower --root .watchtower artifact-path
+```
+
+The next agent can run `worker-status` and `artifact-path` before asking the human to repeat context.
+
+## Why not TODO.md?
+
+A plain TODO file is useful, but every agent has to guess its format. Watchtower gives agents a small fixed protocol:
+
+- fixed files for goals, queue, receipts, and artifacts
+- fixed CLI commands that any local coding agent can call
+- separate records for what happened, where the result is, and what is safe to do next
+
+If you want a stricter release check from a source checkout, run:
 
 ```bash
 ./scripts/release_preflight.sh
@@ -196,7 +228,7 @@ By default, data is stored under:
 
 Use `--root <dir>` for tests, demos, or project-local state.
 
-For install, acceptance, and cleanup notes, see `PACKAGING.md`.
+For install, acceptance, and cleanup notes, see [PACKAGING.md](https://github.com/un-n-smith/agent-watchtower/blob/main/PACKAGING.md).
 
 ## Feedback
 
@@ -208,6 +240,14 @@ Please open an issue if:
 - your agent could not understand the Watchtower state
 - the install or quick demo failed
 - you found a clearer way to explain this problem
+
+Useful feedback includes:
+
+- which agent you used
+- your operating system and Python version
+- the commands you ran
+- the `artifact-path` output
+- whether the next session could resume without you explaining everything again
 
 User feedback is the main way this project gets better.
 

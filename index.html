@@ -401,7 +401,7 @@
               <a class="button" href="https://github.com/un-n-smith/agent-watchtower">View on GitHub</a>
               <a class="button secondary" href="#install">Install</a>
             </div>
-            <p class="note">Local files only. No background service. No external account required. Current version: 0.1.3.</p>
+            <p class="note">Local files only. No background service. No external account required. Current version: 0.1.4.</p>
           </div>
 
           <div class="terminal" aria-label="Agent Watchtower terminal demo">
@@ -417,7 +417,7 @@
 next_safe_action:
   write one local artifact
 
-<span class="prompt">$</span> agent-watchtower worker-run
+<span class="prompt">$</span> agent-watchtower worker-run --result "Recorded the actual work result."
 completed_task
 artifact:
   <span class="path">work-artifacts/task-watchtower-demo-first-step.md</span></code></pre>
@@ -483,7 +483,7 @@ python3 -m pip install "agent-watchtower-core @ git+https://github.com/un-n-smit
 ROOT="$(mktemp -d)"
 agent-watchtower --root "$ROOT" init
 agent-watchtower --root "$ROOT" worker-status
-agent-watchtower --root "$ROOT" worker-run
+agent-watchtower --root "$ROOT" worker-run --result "Recorded the actual work result."
 agent-watchtower --root "$ROOT" artifact-path</code></pre>
         </div>
       </section>

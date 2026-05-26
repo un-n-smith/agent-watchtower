@@ -4,13 +4,32 @@ build-backend = "uv_build"
 
 [project]
 name = "agent-watchtower-core"
-version = "0.1.3"
+version = "0.1.4"
 description = "Tiny local CLI for coding-agent continuity."
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
 authors = [{ name = "Agent Watchtower contributors" }]
 dependencies = []
+keywords = ["ai-agents", "coding-agents", "continuity", "cli", "local-first"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Software Development",
+]
+
+[project.urls]
+Homepage = "https://github.com/un-n-smith/agent-watchtower"
+Repository = "https://github.com/un-n-smith/agent-watchtower"
+Issues = "https://github.com/un-n-smith/agent-watchtower/issues"
+Documentation = "https://github.com/un-n-smith/agent-watchtower#readme"
 
 [project.scripts]
 agent-watchtower = "agent_watchtower.cli:main"

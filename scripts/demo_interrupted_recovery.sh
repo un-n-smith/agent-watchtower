@@ -30,7 +30,8 @@ section "2. see what the next session would know"
 "${WATCHTOWER[@]}" --root "$ROOT" worker-status
 
 section "3. run one bounded worker step"
-"${WATCHTOWER[@]}" --root "$ROOT" worker-run
+"${WATCHTOWER[@]}" --root "$ROOT" worker-run \
+  --result "Created the first continuity artifact and verified the local receipt."
 
 section "4. find the latest artifact"
 "${WATCHTOWER[@]}" --root "$ROOT" artifact-path

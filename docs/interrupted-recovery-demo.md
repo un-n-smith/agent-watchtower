@@ -30,7 +30,7 @@ From an installed package:
 ROOT="$(mktemp -d)"
 agent-watchtower --root "$ROOT" init
 agent-watchtower --root "$ROOT" worker-status
-agent-watchtower --root "$ROOT" worker-run
+agent-watchtower --root "$ROOT" worker-run --result "Recorded the real work result and verified the artifact path."
 agent-watchtower --root "$ROOT" artifact-path
 ```
 
@@ -44,7 +44,7 @@ From a source checkout:
 
 After `init`, the runtime has one demo goal and one open task.
 
-After `worker-run`, the runtime has:
+After `worker-run --result ...`, the runtime has:
 
 - a completed run receipt
 - a markdown artifact

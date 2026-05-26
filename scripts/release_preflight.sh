@@ -3,6 +3,7 @@ set -euo pipefail
 
 export PYTHONDONTWRITEBYTECODE=1
 export PYTHONPATH="${PYTHONPATH:-}:src"
+find . -name '__pycache__' -type d -prune -exec rm -rf {} +
 
 status=0
 
@@ -20,7 +21,7 @@ required_file() {
 }
 
 section "required files"
-for file in CNAME index.html zh-CN.html README.md README.zh-CN.md ACCEPTANCE.md LICENSE pyproject.toml .github/workflows/publish-pypi.yml docs/interrupted-recovery-demo.md docs/interrupted-recovery-demo.zh-CN.md scripts/acceptance_v0.sh scripts/demo_interrupted_recovery.sh src/agent_watchtower/cli.py src/agent_watchtower/worker.py tests/test_core.py; do
+for file in CNAME index.html zh-CN.html README.md README.zh-CN.md AGENTS.md AGENTS.structured.md ACCEPTANCE.md LICENSE pyproject.toml .github/workflows/publish-pypi.yml docs/interrupted-recovery-demo.md docs/interrupted-recovery-demo.zh-CN.md scripts/acceptance_v0.sh scripts/demo_interrupted_recovery.sh src/agent_watchtower/__init__.py src/agent_watchtower/cli.py src/agent_watchtower/worker.py tests/test_core.py; do
   required_file "$file"
 done
 
@@ -48,8 +49,10 @@ else
 fi
 
 section "public help"
-help_text="$(python3 -m agent_watchtower.cli --help)"
+help_text="$(python3 -B -m agent_watchtower.cli --help)"
+version_text="$(python3 -B -m agent_watchtower.cli --version)"
 printf '%s\n' "$help_text"
+printf '%s\n' "$version_text"
 for command in init task-add worker-status worker-run artifact-path; do
   if ! grep -q "$command" <<<"$help_text"; then
     printf 'missing public command: %s\n' "$command"
@@ -64,7 +67,7 @@ for hidden in drive adapter-status contact-ask contact-reply window-send window-
 done
 
 section "unit tests"
-python3 -m unittest discover -s tests -q
+python3 -B -m unittest discover -s tests -q
 
 section "acceptance"
 ./scripts/acceptance_v0.sh

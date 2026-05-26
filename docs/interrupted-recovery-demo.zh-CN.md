@@ -40,7 +40,7 @@ Watchtower 会在本地留下一个很小的工作交接本：
 ROOT="$(mktemp -d)"
 agent-watchtower --root "$ROOT" init
 agent-watchtower --root "$ROOT" worker-status
-agent-watchtower --root "$ROOT" worker-run
+agent-watchtower --root "$ROOT" worker-run --result "记录真实工作结果，并验证 artifact path。"
 agent-watchtower --root "$ROOT" artifact-path
 ```
 
@@ -54,7 +54,7 @@ agent-watchtower --root "$ROOT" artifact-path
 
 - `init` 创建一个演示目标和一个待办小任务。
 - `worker-status` 告诉你现在有没有任务能继续做。
-- `worker-run` 做完一个小步骤，并写出一份 markdown 产物。
+- `worker-run --result ...` 记录真实工作结果，并写出一份 markdown 产物。
 - `artifact-path` 告诉你最新产物在哪里。
 
 ## 关掉再回来

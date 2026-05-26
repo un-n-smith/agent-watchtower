@@ -8,6 +8,7 @@ import tomllib
 import unittest
 from pathlib import Path
 
+from agent_watchtower import __version__
 from agent_watchtower.cli import main
 from agent_watchtower.store import WatchtowerStore
 from agent_watchtower.worker import add_task, init_runtime, worker_run, worker_status
@@ -25,7 +26,7 @@ class CoreLoopTests(unittest.TestCase):
             encoding="utf-8"
         )
 
-        self.assertIn("agent still knows where to resume", readme)
+        self.assertIn("agent can check where to resume", readme)
         self.assertIn("Run a local demo", readme)
         self.assertIn("Simplified Chinese](README.zh-CN.md)", readme)
         self.assertIn("Two Readers", readme)
@@ -39,7 +40,7 @@ class CoreLoopTests(unittest.TestCase):
         self.assertIn("brew tap un-n-smith/tap", readme)
         self.assertIn("brew install agent-watchtower", readme)
         self.assertIn("agent-watchtower init", readme)
-        self.assertIn("Coding agents read `AGENTS.md`", readme)
+        self.assertIn("Coding agents read [AGENTS.md]", readme)
         self.assertIn("docs/interrupted-recovery-demo.md", readme)
         self.assertIn("README.zh-CN.md", readme)
         self.assertIn("工作交接本", landing_page)
@@ -50,6 +51,8 @@ class CoreLoopTests(unittest.TestCase):
         self.assertIn("中断恢复演示", demo_zh)
         self.assertIn("再醒来不从零开始", demo_zh)
         self.assertIn("worker-status", agent_rules)
+        self.assertIn("worker-run --result", agent_rules)
+        self.assertIn("AGENTS.structured.md", readme)
         self.assertIn("When The Human Does Not Reply", agent_rules)
         self.assertIn("work notebook", agent_rules)
         self.assertIn("Do not claim work is complete", agent_rules)
@@ -63,6 +66,8 @@ class CoreLoopTests(unittest.TestCase):
         )
 
         self.assertIn("pypa/gh-action-pypi-publish@release/v1", workflow)
+        self.assertIn("python -B -m unittest discover -s tests -q", workflow)
+        self.assertIn("./scripts/release_preflight.sh", workflow)
         self.assertIn("id-token: write", workflow)
         self.assertIn("environment: pypi", workflow)
         self.assertNotIn("PYPI_TOKEN", workflow)
@@ -79,12 +84,14 @@ class CoreLoopTests(unittest.TestCase):
         self.assertIn("No background service", index)
         self.assertIn("zh-CN.html", index)
         self.assertIn("Run a local demo", index)
+        self.assertIn("Current version: 0.1.4", index)
         self.assertIn("pip install agent-watchtower-core", index)
         self.assertIn("macOS, Linux, and Windows", index)
         self.assertIn("brew install agent-watchtower", index)
         self.assertIn("github.com/un-n-smith/agent-watchtower", index)
         self.assertIn("<html lang=\"zh-CN\">", zh_page)
         self.assertIn("让 AI 编程助手回来接着干", zh_page)
+        self.assertIn("当前版本：0.1.4", zh_page)
         self.assertIn("快速跑通", zh_page)
         self.assertIn("macOS、Linux、Windows", zh_page)
         self.assertNotIn("一分钟试用", zh_page)
@@ -95,9 +102,12 @@ class CoreLoopTests(unittest.TestCase):
         pyproject = tomllib.loads((root / "pyproject.toml").read_text(encoding="utf-8"))
 
         self.assertEqual(pyproject["project"]["name"], "agent-watchtower-core")
-        self.assertEqual(pyproject["project"]["version"], "0.1.3")
+        self.assertEqual(pyproject["project"]["version"], "0.1.4")
+        self.assertEqual(__version__, "0.1.4")
         self.assertEqual(pyproject["project"]["scripts"]["agent-watchtower"], "agent_watchtower.cli:main")
         self.assertEqual(pyproject["tool"]["uv"]["build-backend"]["module-name"], "agent_watchtower")
+        self.assertIn("Repository", pyproject["project"]["urls"])
+        self.assertIn("ai-agents", pyproject["project"]["keywords"])
 
     def test_init_status_run_and_artifact_path(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -119,6 +129,57 @@ class CoreLoopTests(unittest.TestCase):
             payload = json.loads(out.getvalue())
             self.assertEqual(payload["artifact_path"], run["artifact_path"])
             self.assertTrue(payload["exists"])
+
+    def test_worker_run_records_result_content(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            store = WatchtowerStore(root)
+            init_runtime(store)
+            added = add_task(
+                store,
+                title="Inspect repository state",
+                next_action="run git status and summarize findings",
+            )
+            self.assertEqual(added["action"], "added")
+
+            result = "Found 3 files with pending documentation updates."
+            run = worker_run(store, result=result)
+            artifact = Path(run["artifact_path"]).read_text(encoding="utf-8")
+            self.assertIn(result, artifact)
+            self.assertEqual(run["task_id"], added["task"]["id"])
+            self.assertIn("result_excerpt", run)
+
+    def test_in_progress_task_is_runnable_before_open_demo(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            store = WatchtowerStore(Path(tmp))
+            init_runtime(store)
+            added = add_task(
+                store,
+                title="Continue interrupted bug fix",
+                next_action="finish the half-done local verification",
+                status="in_progress",
+            )
+            self.assertEqual(added["action"], "added")
+
+            status = worker_status(store)
+            self.assertTrue(status["runnable"])
+            self.assertEqual(status["in_progress_task_count"], 1)
+            self.assertEqual(status["next_task"]["id"], added["task"]["id"])
+
+    def test_empty_runtime_status_tells_agent_to_init(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            status = worker_status(WatchtowerStore(Path(tmp)))
+            self.assertFalse(status["runnable"])
+            self.assertEqual(status["goal_count"], 0)
+            self.assertEqual(status["next_safe_action"], "run init before adding tasks")
+
+    def test_version_flag_reports_package_version(self) -> None:
+        out = io.StringIO()
+        with self.assertRaises(SystemExit) as raised:
+            with contextlib.redirect_stdout(out):
+                main(["--version"])
+        self.assertEqual(raised.exception.code, 0)
+        self.assertIn("agent-watchtower 0.1.4", out.getvalue())
 
     def test_task_add_rejects_unknown_goal(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

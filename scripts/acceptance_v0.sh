@@ -15,7 +15,9 @@ done
 
 python3 -m agent_watchtower.cli --root "$ROOT/runtime" init > "$ROOT/init.json"
 python3 -m agent_watchtower.cli --root "$ROOT/runtime" worker-status > "$ROOT/status-before.json"
-python3 -m agent_watchtower.cli --root "$ROOT/runtime" worker-run > "$ROOT/run.json"
+python3 -m agent_watchtower.cli --version > "$ROOT/version.txt"
+python3 -m agent_watchtower.cli --root "$ROOT/runtime" worker-run \
+  --result "Created the first continuity artifact and verified the local receipt." > "$ROOT/run.json"
 python3 -m agent_watchtower.cli --root "$ROOT/runtime" artifact-path > "$ROOT/artifact.json"
 
 python3 - "$ROOT" <<'PY'
@@ -36,5 +38,6 @@ assert run["action"] == "completed_task"
 artifact_path = Path(artifact["artifact_path"])
 assert artifact_path.exists()
 assert artifact_path == Path(run["artifact_path"])
+assert "Created the first continuity artifact" in artifact_path.read_text(encoding="utf-8")
 print(json.dumps({"status": "pass", "artifact_path": str(artifact_path)}, sort_keys=True))
 PY

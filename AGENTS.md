@@ -48,8 +48,9 @@ Use `--root <dir>` when the user or project requires project-local state.
 
 1. Run `agent-watchtower worker-status`.
 2. If the runtime does not exist, run `agent-watchtower init`.
-3. If there is a runnable task, inspect `next_safe_action` and continue from there.
-4. If there is no runnable task and the user gave a concrete goal, add one bounded task with `task-add`.
+3. If `goal_count` is `0`, run `agent-watchtower init` before adding tasks.
+4. If there is a runnable task, inspect `next_safe_action` and continue from there.
+5. If there is no runnable task and the user gave a concrete goal, add one bounded task with `task-add`.
 
 Do not ask the human to repeat old context until you have checked Watchtower state.
 
@@ -107,12 +108,21 @@ agent-watchtower task-add \
 
 A good task is small enough to complete in one worker cycle and concrete enough that another agent can resume it later.
 
-## When Completing A Step
-
-Run:
+If you started a task and were interrupted before completion, record it as in progress:
 
 ```bash
-agent-watchtower worker-run
+agent-watchtower task-add \
+  --title "Continue interrupted task" \
+  --next-action "resume the concrete safe action" \
+  --status in_progress
+```
+
+## When Completing A Step
+
+After you do the real local work, record the actual result. Prefer a concise markdown result over a generic completion note.
+
+```bash
+agent-watchtower worker-run --result "What changed, what was verified, and where the useful output is."
 ```
 
 Then read the JSON output:
@@ -126,6 +136,12 @@ If `action` is `completed_task`, mention the artifact path when reporting status
 
 If there is another safe task after this one, continue with the next bounded step instead of asking the human to tell you to continue.
 
+If the result is too long for a shell argument, write it to a file and run:
+
+```bash
+agent-watchtower worker-run --result-file result.md
+```
+
 ## When Resuming After Interruption
 
 Run:
@@ -136,6 +152,8 @@ agent-watchtower artifact-path
 ```
 
 Use the latest artifact and `next_safe_action` to rebuild context before asking the user for help.
+
+For agents that need a stricter machine-oriented prompt, see `AGENTS.structured.md`.
 
 ## What Not To Do
 

@@ -82,7 +82,7 @@ Agent Watchtower 做的就是类似这件事。
 ```bash
 agent-watchtower init
 agent-watchtower worker-status
-agent-watchtower worker-run
+agent-watchtower worker-run --result "记录真实工作结果。"
 agent-watchtower artifact-path
 ```
 

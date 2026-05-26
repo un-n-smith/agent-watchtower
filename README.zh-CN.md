@@ -25,14 +25,14 @@ Agent Watchtower 解决的是这个第一阶段问题：**醒来以后不从零�
 ROOT="$(mktemp -d)"
 agent-watchtower --root "$ROOT" init
 agent-watchtower --root "$ROOT" worker-status
-agent-watchtower --root "$ROOT" worker-run
+agent-watchtower --root "$ROOT" worker-run --result "创建了第一份交接记录，并验证了本地 receipt。"
 agent-watchtower --root "$ROOT" artifact-path
 ```
 
 你会看到：
 
 - `worker-status`：现在有没有可以继续做的小任务。
-- `worker-run`：执行一个安全的小步骤，并写一份记录。
+- `worker-run --result ...`：把真实工作结果写进产物，并写一份记录。
 - `artifact-path`：告诉你最新产物在哪。
 
 关掉终端再回来，这些本地记录还在。
@@ -103,6 +103,46 @@ uv tool install agent-watchtower-core
 python3 -m pip install .
 ```
 
+查看版本：
+
+```bash
+agent-watchtower --version
+```
+
+## 用在真实项目里
+
+建议用项目本地目录保存状态：
+
+```bash
+agent-watchtower --root .watchtower init
+agent-watchtower --root .watchtower task-add \
+  --title "检查仓库状态" \
+  --next-action "运行 git status 并总结待处理变化" \
+  --done-definition "产物写清楚变化文件和下一步安全动作"
+```
+
+做完真实工作后，把结果写进去：
+
+```bash
+agent-watchtower --root .watchtower worker-run \
+  --result "已运行 git status。发现 README.md 有文档修改，没有源码修改。"
+agent-watchtower --root .watchtower artifact-path
+```
+
+如果 Agent 需要更严格的机器指令，可以看：
+
+```text
+AGENTS.structured.md
+```
+
+## 它和 TODO.md 有什么区别
+
+TODO 文件当然有用，但每个 Agent 都要猜格式。Watchtower 固定了三件事：
+
+- 固定的本地文件结构。
+- 固定的 5 个 CLI 命令。
+- 把“做过什么”“结果在哪”“下一步安全动作是什么”分开记录。
+
 ## 它会保存什么
 
 默认保存到：
@@ -144,5 +184,13 @@ artifact-path
 ## 反馈
 
 如果它帮你的 Agent 从中断里恢复了，或者没恢复成功，欢迎开 issue 告诉我们。
+
+最好附上：
+
+- 你用的 Agent。
+- 操作系统和 Python 版本。
+- 你跑过的命令。
+- `artifact-path` 输出。
+- 下一次会话是否真的能接着干。
 
 真实用户的问题、失败场景、改进建议，是这个项目继续变好的动力。

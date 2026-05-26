@@ -10,6 +10,8 @@ from .store import InvalidRuntimeStateError, WatchtowerStore
 
 DEMO_GOAL_ID = "goal-watchtower-demo"
 DEMO_TASK_ID = "task-watchtower-demo-first-step"
+RUNNABLE_TASK_STATUSES = {"in_progress", "open"}
+VALID_TASK_STATUSES = RUNNABLE_TASK_STATUSES | {"done"}
 
 
 def _safe_slug(value: str) -> str:
@@ -57,6 +59,13 @@ def _validate_work_queue(queue: list[dict], store: WatchtowerStore) -> None:
                 store.work_queue_path,
                 f"task at index {index} has non-integer priority",
             ) from error
+        status = task.get("status", "open")
+        if not isinstance(status, str) or status not in VALID_TASK_STATUSES:
+            raise InvalidRuntimeStateError(
+                "invalid_work_queue_json",
+                store.work_queue_path,
+                f"task at index {index} has unsupported status {status!r}",
+            )
 
 
 def _validate_run_receipts(receipts: list[dict], store: WatchtowerStore) -> None:
@@ -93,9 +102,14 @@ def _open_tasks(queue: list[dict], active_goal_ids: set[str]) -> list[dict]:
         [
             task
             for task in queue
-            if task.get("status") == "open" and task.get("goal_id") in active_goal_ids
+            if task.get("status") in RUNNABLE_TASK_STATUSES and task.get("goal_id") in active_goal_ids
         ],
-        key=lambda row: (int(row.get("priority", 100)), row.get("created_at", ""), row.get("id", "")),
+        key=lambda row: (
+            0 if row.get("status") == "in_progress" else 1,
+            int(row.get("priority", 100)),
+            row.get("created_at", ""),
+            row.get("id", ""),
+        ),
     )
 
 
@@ -137,7 +151,7 @@ def init_runtime(store: WatchtowerStore) -> dict:
                 done_definition="A markdown artifact exists and worker-status can report completion.",
                 created_at=now,
                 updated_at=now,
-                priority=10,
+                priority=999,
             ).to_dict()
         ]
         store.write_work_queue(queue)
@@ -158,6 +172,7 @@ def add_task(
     goal_id: str = DEMO_GOAL_ID,
     task_id: str = "",
     priority: int = 100,
+    status: str = "open",
     done_definition: str = "",
 ) -> dict:
     store.ensure()
@@ -166,6 +181,13 @@ def add_task(
     except InvalidRuntimeStateError as error:
         return _invalid_state_response(error)
     active_goals = _active_goal_ids(goals)
+    if status not in RUNNABLE_TASK_STATUSES:
+        return {
+            "action": "blocked",
+            "reason": "unsupported_task_status",
+            "status": status,
+            "next_safe_action": "use status open or in_progress",
+        }
     if goal_id not in active_goals:
         return {
             "action": "blocked",
@@ -183,6 +205,7 @@ def add_task(
         done_definition=done_definition,
         created_at=now,
         updated_at=now,
+        status=status,
         priority=priority,
     ).to_dict()
     if any(task.get("id") == new_task["id"] for task in queue):
@@ -216,6 +239,26 @@ def worker_status(store: WatchtowerStore) -> dict:
     active_goals = _active_goal_ids(goals)
     open_tasks = _open_tasks(queue, active_goals)
     next_task = open_tasks[0] if open_tasks else {}
+    open_task_count = len(
+        [
+            task
+            for task in queue
+            if task.get("status") == "open" and task.get("goal_id") in active_goals
+        ]
+    )
+    in_progress_task_count = len(
+        [
+            task
+            for task in queue
+            if task.get("status") == "in_progress" and task.get("goal_id") in active_goals
+        ]
+    )
+    if next_task:
+        next_safe_action = next_task.get("next_action", "run worker-run")
+    elif not active_goals:
+        next_safe_action = "run init before adding tasks"
+    else:
+        next_safe_action = "add a bounded task with task-add"
     latest_artifact = _latest_artifact(receipts)
     return {
         "summary": (
@@ -228,12 +271,12 @@ def worker_status(store: WatchtowerStore) -> dict:
         "reason": "open_task" if open_tasks else "no_open_task",
         "goal_count": len(goals),
         "active_goal_count": len(active_goals),
-        "open_task_count": len(open_tasks),
+        "open_task_count": open_task_count,
+        "in_progress_task_count": in_progress_task_count,
+        "runnable_task_count": len(open_tasks),
         "next_task": next_task,
         "latest_artifact_path": latest_artifact,
-        "next_safe_action": (
-            next_task.get("next_action", "run worker-run") if next_task else "add a bounded task with task-add"
-        ),
+        "next_safe_action": next_safe_action,
     }
 
 
@@ -253,9 +296,20 @@ def _artifact_path(store: WatchtowerStore, task: dict) -> Path:
     return path
 
 
-def _render_artifact(task: dict, goal: dict, artifact_path: Path, next_safe_action: str, created_at: str) -> str:
+def _render_artifact(
+    task: dict,
+    goal: dict,
+    artifact_path: Path,
+    next_safe_action: str,
+    created_at: str,
+    result: str = "",
+) -> str:
     criteria = goal.get("success_criteria", [])
     criteria_lines = [f"- {item}" for item in criteria] or ["- No success criteria recorded."]
+    result_body = result.strip() or (
+        "No task result was provided. If real work was completed, rerun with "
+        "`worker-run --result ...` or `worker-run --result-file <path>` so the next agent sees the useful outcome."
+    )
     return "\n".join(
         [
             f"# Worker Run: {task.get('title', task.get('id', 'untitled task'))}",
@@ -268,7 +322,7 @@ def _render_artifact(task: dict, goal: dict, artifact_path: Path, next_safe_acti
             "",
             "## Result",
             "",
-            "Completed one bounded local step and recorded the work in durable state.",
+            result_body,
             "",
             "## Goal Success Criteria",
             "",
@@ -282,7 +336,7 @@ def _render_artifact(task: dict, goal: dict, artifact_path: Path, next_safe_acti
     )
 
 
-def worker_run(store: WatchtowerStore) -> dict:
+def worker_run(store: WatchtowerStore, result: str = "") -> dict:
     try:
         goals, queue, receipts = _read_runtime(store)
     except InvalidRuntimeStateError as error:
@@ -308,7 +362,7 @@ def worker_run(store: WatchtowerStore) -> dict:
     artifact_path = _artifact_path(store, task)
     artifact_path.parent.mkdir(parents=True, exist_ok=True)
     artifact_path.write_text(
-        _render_artifact(task, goal, artifact_path, next_safe_action, created_at),
+        _render_artifact(task, goal, artifact_path, next_safe_action, created_at, result=result),
         encoding="utf-8",
     )
 
@@ -330,6 +384,8 @@ def worker_run(store: WatchtowerStore) -> dict:
         next_safe_action=next_safe_action,
         created_at=created_at,
     ).to_dict()
+    if result.strip():
+        receipt["result_excerpt"] = result.strip()[:500]
     receipts.append(receipt)
     store.write_run_receipts(receipts)
     store.append_worker_run(receipt)
