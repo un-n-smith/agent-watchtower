@@ -35,6 +35,18 @@ agent-watchtower --root "$ROOT" artifact-path
 
 关掉终端再回来，这些本地记录还在。
 
+想看更直白的“断片前 / 断片后”对比，见：
+
+```text
+docs/interrupted-recovery-demo.zh-CN.md
+```
+
+源码目录里也可以直接跑：
+
+```bash
+./scripts/demo_interrupted_recovery.sh
+```
+
 ## 安装方式
 
 从 GitHub 安装：

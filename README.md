@@ -44,6 +44,9 @@ You should see one runnable task, one completed worker run, and one markdown art
 
 Close the terminal. Come back later. The local Watchtower files still say what happened and where the next session should resume.
 
+For a clearer before/after story, see `docs/interrupted-recovery-demo.md`.
+中文对比演示见 `docs/interrupted-recovery-demo.zh-CN.md`。
+
 ## Two Readers
 
 There are two different readers:
@@ -139,6 +142,12 @@ If you want a stricter release check, run:
 
 ```bash
 ./scripts/release_preflight.sh
+```
+
+For a scripted interruption demo from a source checkout, run:
+
+```bash
+./scripts/demo_interrupted_recovery.sh
 ```
 
 ## Commands

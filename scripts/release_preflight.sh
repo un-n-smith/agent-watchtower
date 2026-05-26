@@ -20,7 +20,7 @@ required_file() {
 }
 
 section "required files"
-for file in README.md ACCEPTANCE.md LICENSE pyproject.toml scripts/acceptance_v0.sh src/agent_watchtower/cli.py src/agent_watchtower/worker.py tests/test_core.py; do
+for file in README.md README.zh-CN.md ACCEPTANCE.md LICENSE pyproject.toml docs/interrupted-recovery-demo.md docs/interrupted-recovery-demo.zh-CN.md scripts/acceptance_v0.sh scripts/demo_interrupted_recovery.sh src/agent_watchtower/cli.py src/agent_watchtower/worker.py tests/test_core.py; do
   required_file "$file"
 done
 

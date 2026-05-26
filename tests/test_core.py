@@ -20,6 +20,10 @@ class CoreLoopTests(unittest.TestCase):
         packaging = (root / "PACKAGING.md").read_text(encoding="utf-8")
         agent_rules = (root / "AGENTS.md").read_text(encoding="utf-8")
         landing_page = (root / "docs" / "landing-page.zh.md").read_text(encoding="utf-8")
+        demo = (root / "docs" / "interrupted-recovery-demo.md").read_text(encoding="utf-8")
+        demo_zh = (root / "docs" / "interrupted-recovery-demo.zh-CN.md").read_text(
+            encoding="utf-8"
+        )
 
         self.assertIn("Agent 记得做到哪了", readme)
         self.assertIn("60 秒看到价值", readme)
@@ -28,9 +32,15 @@ class CoreLoopTests(unittest.TestCase):
         self.assertIn("agent-watchtower init", readme)
         self.assertIn("Coding agents read `AGENTS.md`", readme)
         self.assertIn("docs/landing-page.zh.md", readme)
+        self.assertIn("docs/interrupted-recovery-demo.md", readme)
+        self.assertIn("docs/interrupted-recovery-demo.zh-CN.md", readme)
         self.assertIn("工作交接本", landing_page)
         self.assertIn("别让 AI 干活断片", landing_page)
         self.assertIn("它会不会一直等我？", landing_page)
+        self.assertIn("Interrupted Recovery Demo", demo)
+        self.assertIn("not full autonomy", demo)
+        self.assertIn("中断恢复演示", demo_zh)
+        self.assertIn("再醒来不从零开始", demo_zh)
         self.assertIn("worker-status", agent_rules)
         self.assertIn("When The Human Does Not Reply", agent_rules)
         self.assertIn("work notebook", agent_rules)
