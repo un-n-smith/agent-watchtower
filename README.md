@@ -68,15 +68,7 @@ Requirements:
 - A writable local runtime directory
 - No background service, external account, or network dependency
 
-### From GitHub
-
-```bash
-python3 -m pip install "agent-watchtower-core @ git+https://github.com/un-n-smith/agent-watchtower.git"
-```
-
 ### From PyPI
-
-PyPI publishing is being prepared. After the first PyPI release, this will work:
 
 ```bash
 python3 -m pip install agent-watchtower-core
@@ -89,18 +81,24 @@ brew tap un-n-smith/tap
 brew install agent-watchtower
 ```
 
+### From GitHub
+
+```bash
+python3 -m pip install "agent-watchtower-core @ git+https://github.com/un-n-smith/agent-watchtower.git"
+```
+
 ### Pipx And Uv
 
 For isolated CLI installs, `pipx` is also clean:
 
 ```bash
-pipx install "git+https://github.com/un-n-smith/agent-watchtower.git"
+pipx install agent-watchtower-core
 ```
 
 Or with `uv`:
 
 ```bash
-uv tool install "git+https://github.com/un-n-smith/agent-watchtower.git"
+uv tool install agent-watchtower-core
 ```
 
 ### From A Local Checkout

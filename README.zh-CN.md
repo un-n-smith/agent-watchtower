@@ -49,13 +49,7 @@ docs/interrupted-recovery-demo.zh-CN.md
 
 ## 安装方式
 
-从 GitHub 安装：
-
-```bash
-python3 -m pip install "agent-watchtower-core @ git+https://github.com/un-n-smith/agent-watchtower.git"
-```
-
-PyPI 发布后可以直接：
+从 PyPI 安装：
 
 ```bash
 python3 -m pip install agent-watchtower-core
@@ -68,16 +62,22 @@ brew tap un-n-smith/tap
 brew install agent-watchtower
 ```
 
+从 GitHub 安装：
+
+```bash
+python3 -m pip install "agent-watchtower-core @ git+https://github.com/un-n-smith/agent-watchtower.git"
+```
+
 如果你常装命令行工具，也可以用 `pipx` 隔离安装：
 
 ```bash
-pipx install "git+https://github.com/un-n-smith/agent-watchtower.git"
+pipx install agent-watchtower-core
 ```
 
 或者用 `uv`：
 
 ```bash
-uv tool install "git+https://github.com/un-n-smith/agent-watchtower.git"
+uv tool install agent-watchtower-core
 ```
 
 从本地源码目录安装：
@@ -85,8 +85,6 @@ uv tool install "git+https://github.com/un-n-smith/agent-watchtower.git"
 ```bash
 python3 -m pip install .
 ```
-
-PyPI 发布后会再支持更短的 `pip install agent-watchtower-core`。
 
 ## 它会保存什么
 

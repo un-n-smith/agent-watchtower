@@ -30,6 +30,7 @@ class CoreLoopTests(unittest.TestCase):
         self.assertIn("Two Readers", readme)
         self.assertIn("pip install .", readme)
         self.assertIn("pip install agent-watchtower-core", readme)
+        self.assertNotIn("PyPI publishing is being prepared", readme)
         self.assertIn("brew tap un-n-smith/tap", readme)
         self.assertIn("brew install agent-watchtower", readme)
         self.assertIn("agent-watchtower init", readme)
@@ -71,6 +72,7 @@ class CoreLoopTests(unittest.TestCase):
         self.assertIn("<title>Agent Watchtower</title>", index)
         self.assertIn("Let coding agents resume without starting over.", index)
         self.assertIn("No background service", index)
+        self.assertIn("pip install agent-watchtower-core", index)
         self.assertIn("brew install agent-watchtower", index)
         self.assertIn("github.com/un-n-smith/agent-watchtower", index)
 
