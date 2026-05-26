@@ -55,7 +55,14 @@ docs/interrupted-recovery-demo.zh-CN.md
 python3 -m pip install "agent-watchtower-core @ git+https://github.com/un-n-smith/agent-watchtower.git"
 ```
 
-如果你常装命令行工具，推荐用 `pipx` 隔离安装：
+用 Homebrew 安装：
+
+```bash
+brew tap un-n-smith/tap
+brew install agent-watchtower
+```
+
+如果你常装命令行工具，也可以用 `pipx` 隔离安装：
 
 ```bash
 pipx install "git+https://github.com/un-n-smith/agent-watchtower.git"
@@ -73,7 +80,7 @@ uv tool install "git+https://github.com/un-n-smith/agent-watchtower.git"
 python3 -m pip install .
 ```
 
-Homebrew 之后再做。第一版先用 `pipx`、`uv`、`pip` 跑通。
+PyPI 发布后会再支持更短的 `pip install agent-watchtower-core`。
 
 ## 它会保存什么
 

@@ -74,7 +74,16 @@ Requirements:
 python3 -m pip install "agent-watchtower-core @ git+https://github.com/un-n-smith/agent-watchtower.git"
 ```
 
-For isolated CLI installs, `pipx` is usually cleaner:
+### Homebrew
+
+```bash
+brew tap un-n-smith/tap
+brew install agent-watchtower
+```
+
+### Pipx And Uv
+
+For isolated CLI installs, `pipx` is also clean:
 
 ```bash
 pipx install "git+https://github.com/un-n-smith/agent-watchtower.git"
@@ -103,10 +112,6 @@ For development without installing:
 ```bash
 PYTHONPATH=src python3 -m agent_watchtower.cli --help
 ```
-
-### Homebrew
-
-Homebrew support is planned after the first public release proves useful. For now, use `pipx`, `uv tool install`, or `pip install` from GitHub.
 
 ## 60 秒看到价值
 

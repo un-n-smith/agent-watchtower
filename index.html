@@ -464,7 +464,11 @@ artifact:
             Install from GitHub, then run a disposable local demo. The generated runtime can be deleted
             whenever you are done testing.
           </p>
-          <pre><code>python3 -m pip install "agent-watchtower-core @ git+https://github.com/un-n-smith/agent-watchtower.git"
+          <pre><code>brew tap un-n-smith/tap
+brew install agent-watchtower
+
+# Or install from GitHub with pip:
+python3 -m pip install "agent-watchtower-core @ git+https://github.com/un-n-smith/agent-watchtower.git"
 
 ROOT="$(mktemp -d)"
 agent-watchtower --root "$ROOT" init
