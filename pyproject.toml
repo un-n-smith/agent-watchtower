@@ -1,0 +1,30 @@
+[build-system]
+requires = ["uv_build>=0.9.0,<0.10.0"]
+build-backend = "uv_build"
+
+[project]
+name = "agent-watchtower-core"
+version = "0.1.0"
+description = "Tiny local CLI for coding-agent continuity."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{ name = "Agent Watchtower contributors" }]
+dependencies = []
+
+[project.scripts]
+agent-watchtower = "agent_watchtower.cli:main"
+
+[tool.uv.build-backend]
+module-name = "agent_watchtower"
+
+[dependency-groups]
+dev = ["ruff>=0.8.0"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501"]

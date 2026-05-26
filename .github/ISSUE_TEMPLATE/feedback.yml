@@ -1,0 +1,38 @@
+name: Feedback
+description: Share an interrupted-agent story, idea, or usability note.
+title: "[Feedback]: "
+labels: ["feedback"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for trying Agent Watchtower. Real interrupted-agent stories help improve the project.
+  - type: textarea
+    id: story
+    attributes:
+      label: What happened?
+      description: Tell us what the agent was doing, where it stopped, and what you expected to happen next.
+      placeholder: "My agent was working on..., then..., and I wanted it to resume by..."
+    validations:
+      required: true
+  - type: textarea
+    id: watchtower-helped
+    attributes:
+      label: Did Watchtower help?
+      description: What state, artifact, or command was useful? What was confusing?
+    validations:
+      required: false
+  - type: input
+    id: agent-tool
+    attributes:
+      label: Agent tool
+      placeholder: "Codex, Claude Code, Hermes, CodeWhale, other"
+    validations:
+      required: false
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggestion
+      description: What would make this clearer or more useful?
+    validations:
+      required: false

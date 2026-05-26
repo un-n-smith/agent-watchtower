@@ -1,0 +1,35 @@
+name: Bug Report
+description: Report an install, CLI, state, or resume problem.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What failed?
+      placeholder: "I ran..., expected..., but got..."
+    validations:
+      required: true
+  - type: textarea
+    id: commands
+    attributes:
+      label: Commands run
+      description: Paste the commands and relevant output.
+      render: bash
+    validations:
+      required: false
+  - type: input
+    id: platform
+    attributes:
+      label: Platform
+      placeholder: "macOS / Linux / Windows, Python version"
+    validations:
+      required: false
+  - type: input
+    id: version
+    attributes:
+      label: Agent Watchtower version or install source
+      placeholder: "0.1.0, GitHub commit, local checkout"
+    validations:
+      required: false
