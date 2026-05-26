@@ -74,6 +74,14 @@ Requirements:
 python3 -m pip install "agent-watchtower-core @ git+https://github.com/un-n-smith/agent-watchtower.git"
 ```
 
+### From PyPI
+
+PyPI publishing is being prepared. After the first PyPI release, this will work:
+
+```bash
+python3 -m pip install agent-watchtower-core
+```
+
 ### Homebrew
 
 ```bash

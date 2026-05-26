@@ -55,6 +55,12 @@ docs/interrupted-recovery-demo.zh-CN.md
 python3 -m pip install "agent-watchtower-core @ git+https://github.com/un-n-smith/agent-watchtower.git"
 ```
 
+PyPI 发布后可以直接：
+
+```bash
+python3 -m pip install agent-watchtower-core
+```
+
 用 Homebrew 安装：
 
 ```bash

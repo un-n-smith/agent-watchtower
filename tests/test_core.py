@@ -29,6 +29,7 @@ class CoreLoopTests(unittest.TestCase):
         self.assertIn("60 秒看到价值", readme)
         self.assertIn("Two Readers", readme)
         self.assertIn("pip install .", readme)
+        self.assertIn("pip install agent-watchtower-core", readme)
         self.assertIn("brew tap un-n-smith/tap", readme)
         self.assertIn("brew install agent-watchtower", readme)
         self.assertIn("agent-watchtower init", readme)
@@ -49,6 +50,17 @@ class CoreLoopTests(unittest.TestCase):
         self.assertIn("Do not claim work is complete", agent_rules)
         self.assertIn("pip install .", packaging)
         self.assertIn("agent-watchtower --help", packaging)
+
+    def test_pypi_publish_workflow_uses_trusted_publishing(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        workflow = (root / ".github" / "workflows" / "publish-pypi.yml").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn("pypa/gh-action-pypi-publish@release/v1", workflow)
+        self.assertIn("id-token: write", workflow)
+        self.assertIn("environment: pypi", workflow)
+        self.assertNotIn("PYPI_TOKEN", workflow)
 
     def test_github_pages_site_files_are_present(self) -> None:
         root = Path(__file__).resolve().parents[1]
