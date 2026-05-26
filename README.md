@@ -6,6 +6,8 @@
 [![CLI](https://img.shields.io/badge/interface-CLI-informational.svg)](#commands)
 [![Status](https://img.shields.io/badge/status-alpha-orange.svg)](#boundaries)
 
+**Languages:** English | [Simplified Chinese](README.zh-CN.md)
+
 **Close the terminal, come back later, and your agent still knows where to resume.**
 
 You use Codex, Claude Code, Hermes, CodeWhale, or another coding agent for a few hours. Then the terminal closes, the session gets interrupted, or the next window starts cold.
@@ -46,7 +48,6 @@ You should see one runnable task, one completed worker run, and one markdown art
 Close the terminal. Come back later. The local Watchtower files still say what happened and where the next session should resume.
 
 For a clearer before/after story, see `docs/interrupted-recovery-demo.md`.
-Chinese comparison demo: `docs/interrupted-recovery-demo.zh-CN.md`.
 
 ## Two Readers
 
@@ -56,10 +57,6 @@ There are two different readers:
 - Coding agents read `AGENTS.md` to learn exactly when and how to call the five public commands.
 
 The README explains the value. `AGENTS.md` explains the operating rules.
-
-For a plainer Chinese introduction, see `docs/landing-page.zh.md`.
-
-Chinese README: `README.zh-CN.md`.
 
 ## Website
 
@@ -135,7 +132,7 @@ For development without installing:
 PYTHONPATH=src python3 -m agent_watchtower.cli --help
 ```
 
-## See the value in 60 seconds
+## Run a local demo
 
 For the default local runtime:
 
