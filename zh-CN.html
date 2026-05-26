@@ -244,10 +244,10 @@
           <h1>让 AI 编程助手回来接着干。</h1>
           <p class="lead">
             Agent Watchtower 是一个很小的本地命令行工具。它记录目标、下一步安全动作、运行记录和产物位置，
-            让 Codex、Claude Code、Hermes、CodeWhale 这类编程 Agent 中断后不用从头解释。
+            让 Codex、Claude Code、Hermes、CodeWhale 或其他编程 Agent 中断后不用从头解释。
           </p>
           <div class="actions">
-            <a class="button" href="#install">一分钟试用</a>
+            <a class="button" href="#install">快速跑通</a>
             <a class="button secondary" href="https://github.com/un-n-smith/agent-watchtower">查看 GitHub</a>
           </div>
         </div>
@@ -289,8 +289,9 @@ work-artifacts/task-watchtower-demo-first-step.md</code></pre>
 
       <section id="install" class="install">
         <div class="shell">
-          <h2>安装和试用</h2>
+          <h2>安装和本地演示</h2>
           <p>当前版本：0.1.1。只写本地文件，不需要后台服务，也不需要外部账号。</p>
+          <p>它是 Python 3.11+ 命令行工具，面向 macOS、Linux、Windows。当前发布流程已在 macOS 实测；Linux 和 Windows 是支持目标，后续会补 CI 覆盖。</p>
           <pre><code>python3 -m pip install agent-watchtower-core
 
 # 或者用 Homebrew：

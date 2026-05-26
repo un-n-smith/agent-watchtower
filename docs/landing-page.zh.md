@@ -59,7 +59,7 @@ Agent Watchtower 做的就是类似这件事。
 
 ## 你能看到什么
 
-跑完最简单的试用以后，你会看到：
+跑完最简单的本地演示以后，你会看到：
 
 - 当前有没有任务可以继续
 - 下一步建议做什么
@@ -75,7 +75,7 @@ Agent Watchtower 做的就是类似这件事。
 我刚才做了什么，证据在哪，下一步从哪里开始。
 ```
 
-## 60 秒试一下
+## 60 秒跑通本地演示
 
 安装以后，运行：
 
@@ -98,7 +98,7 @@ agent-watchtower artifact-path
 
 - AI 助手干到一半停了
 - 新窗口不知道旧窗口做到哪了
-- 换了 Codex、Claude Code、Hermes、CodeWhale 之类的工具
+- 换了 Codex、Claude Code、Hermes、CodeWhale 或其他编程 Agent 工具
 - 项目做久了，聊天记录太长，恢复上下文很痛苦
 - 想让 AI 每完成一小步都留下清楚记录
 

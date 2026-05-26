@@ -2,7 +2,7 @@
 
 **给 AI 编程助手用的本地工作交接本。**
 
-你让 Codex、Claude Code、Hermes、CodeWhale 这类 Agent 干活。它写了一会代码，终端关了、会话断了、上下文太长了，或者你第二天回来换了一个窗口。
+你让 Codex、Claude Code、Hermes、CodeWhale 或其他编程 Agent 干活。它写了一会代码，终端关了、会话断了、上下文太长了，或者你第二天回来换了一个窗口。
 
 问题就来了：
 
@@ -15,7 +15,7 @@ Agent Watchtower 解决的是这个第一阶段问题：**醒来以后不从零�
 
 它不是新的 AI，也不是后台常驻服务。它只是一个很小的本地 CLI，把关键状态写成普通文件，让下一次会话能接着看。
 
-## 60 秒试一下
+## 60 秒跑通本地演示
 
 安装后运行：
 
@@ -55,6 +55,14 @@ docs/interrupted-recovery-demo.zh-CN.md
 - 中文：http://www.adgwmuren.top/zh-CN.html
 
 HTTPS 证书还在 GitHub Pages 签发中，目前先用 HTTP。
+
+## 支持哪些系统
+
+Agent Watchtower 是普通 Python 命令行工具，只在本地写 JSON 和 markdown 文件。
+
+- macOS：当前发布流程已实测。
+- Linux：支持目标，需要 Python 3.11 或更新版本。
+- Windows：支持目标，需要 Python 3.11 或更新版本；推荐用 `pip`、`pipx` 或 `uv`，不要用 Homebrew。
 
 从 PyPI 安装：
 

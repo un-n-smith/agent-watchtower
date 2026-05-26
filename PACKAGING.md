@@ -4,7 +4,12 @@
 
 - Python 3.11 or newer
 - Writable local filesystem
+- macOS, Linux, or Windows
 - No external API keys, accounts, adapters, or background daemon
+
+Current release smoke checks are run on macOS. The core package is a plain Python
+CLI and is intended to run on Linux and Windows with Python 3.11+; add CI matrix
+coverage before claiming broad production-grade cross-platform support.
 
 ## Install Smoke Check
 

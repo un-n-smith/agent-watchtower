@@ -2,10 +2,11 @@
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)](pyproject.toml)
+[![OS](https://img.shields.io/badge/os-macOS%20%7C%20Linux%20%7C%20Windows-informational.svg)](#supported-systems)
 [![CLI](https://img.shields.io/badge/interface-CLI-informational.svg)](#commands)
 [![Status](https://img.shields.io/badge/status-alpha-orange.svg)](#boundaries)
 
-**关掉终端再打开，Agent 记得做到哪了。**
+**Close the terminal, come back later, and your agent still knows where to resume.**
 
 You use Codex, Claude Code, Hermes, CodeWhale, or another coding agent for a few hours. Then the terminal closes, the session gets interrupted, or the next window starts cold.
 
@@ -45,7 +46,7 @@ You should see one runnable task, one completed worker run, and one markdown art
 Close the terminal. Come back later. The local Watchtower files still say what happened and where the next session should resume.
 
 For a clearer before/after story, see `docs/interrupted-recovery-demo.md`.
-中文对比演示见 `docs/interrupted-recovery-demo.zh-CN.md`。
+Chinese comparison demo: `docs/interrupted-recovery-demo.zh-CN.md`.
 
 ## Two Readers
 
@@ -58,7 +59,7 @@ The README explains the value. `AGENTS.md` explains the operating rules.
 
 For a plainer Chinese introduction, see `docs/landing-page.zh.md`.
 
-中文说明见 `README.zh-CN.md`。
+Chinese README: `README.zh-CN.md`.
 
 ## Website
 
@@ -74,6 +75,14 @@ Requirements:
 - Python 3.11+
 - A writable local runtime directory
 - No background service, external account, or network dependency
+
+## Supported Systems
+
+Agent Watchtower is a plain Python CLI that stores local JSON and markdown files.
+
+- macOS: tested in the current release flow.
+- Linux: supported target with Python 3.11+.
+- Windows: supported target with Python 3.11+; use `pip`, `pipx`, or `uv` instead of Homebrew.
 
 ### From PyPI
 
@@ -126,7 +135,7 @@ For development without installing:
 PYTHONPATH=src python3 -m agent_watchtower.cli --help
 ```
 
-## 60 秒看到价值
+## See the value in 60 seconds
 
 For the default local runtime:
 
