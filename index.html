@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Agent Watchtower</title>
+    <meta
+      name="description"
+      content="A tiny local CLI that helps coding agents resume interrupted work without starting over."
+    />
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f7f8fb;
+        --ink: #17202a;
+        --muted: #5f6b7a;
+        --line: #d8dee8;
+        --panel: #ffffff;
+        --terminal: #151a22;
+        --terminal-soft: #222a35;
+        --teal: #0f766e;
+        --amber: #b7791f;
+        --blue: #2f5f9f;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .shell {
+        width: min(1120px, calc(100% - 40px));
+        margin: 0 auto;
+      }
+
+      header {
+        border-bottom: 1px solid var(--line);
+        background: rgba(247, 248, 251, 0.92);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        backdrop-filter: blur(12px);
+      }
+
+      .nav {
+        min-height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 700;
+      }
+
+      .brand-mark {
+        width: 28px;
+        height: 28px;
+        border: 2px solid var(--ink);
+        border-radius: 6px;
+        display: grid;
+        place-items: center;
+        color: var(--teal);
+      }
+
+      .brand-mark svg {
+        width: 17px;
+        height: 17px;
+      }
+
+      nav {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      nav a {
+        text-decoration: none;
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 0 16px;
+        border-radius: 7px;
+        border: 1px solid var(--ink);
+        background: var(--ink);
+        color: #fff;
+        text-decoration: none;
+        font-weight: 700;
+      }
+
+      .button.secondary {
+        background: transparent;
+        color: var(--ink);
+      }
+
+      main {
+        overflow: hidden;
+      }
+
+      .hero {
+        min-height: 78vh;
+        display: grid;
+        align-items: center;
+        padding: 64px 0 48px;
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 0.95fr) minmax(420px, 1.05fr);
+        gap: 52px;
+        align-items: center;
+      }
+
+      h1 {
+        margin: 0;
+        max-width: 700px;
+        font-size: 58px;
+        line-height: 1.02;
+        letter-spacing: 0;
+      }
+
+      .lead {
+        max-width: 620px;
+        margin: 24px 0 0;
+        color: var(--muted);
+        font-size: 20px;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 32px;
+      }
+
+      .note {
+        margin-top: 22px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .terminal {
+        border-radius: 8px;
+        background: var(--terminal);
+        color: #e8eef7;
+        box-shadow: 0 24px 60px rgba(23, 32, 42, 0.18);
+        overflow: hidden;
+        border: 1px solid #2d3644;
+      }
+
+      .terminal-top {
+        min-height: 42px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 16px;
+        background: var(--terminal-soft);
+      }
+
+      .dot {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: #f87171;
+      }
+
+      .dot:nth-child(2) {
+        background: #fbbf24;
+      }
+
+      .dot:nth-child(3) {
+        background: #34d399;
+      }
+
+      pre {
+        margin: 0;
+        padding: 22px;
+        overflow-x: auto;
+        font-size: 14px;
+        line-height: 1.6;
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      }
+
+      .prompt {
+        color: #67e8f9;
+      }
+
+      .ok {
+        color: #86efac;
+      }
+
+      .path {
+        color: #fcd34d;
+      }
+
+      section {
+        padding: 72px 0;
+        border-top: 1px solid var(--line);
+      }
+
+      h2 {
+        margin: 0 0 18px;
+        font-size: 34px;
+        line-height: 1.15;
+        letter-spacing: 0;
+      }
+
+      .section-lead {
+        max-width: 760px;
+        margin: 0;
+        color: var(--muted);
+        font-size: 18px;
+      }
+
+      .flow {
+        margin-top: 34px;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+      }
+
+      .step {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 22px;
+      }
+
+      .step strong {
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      .step p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .split {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 20px;
+        margin-top: 34px;
+      }
+
+      .compare {
+        border-left: 4px solid var(--amber);
+        background: #fff7ed;
+        padding: 22px;
+      }
+
+      .compare.after {
+        border-left-color: var(--teal);
+        background: #ecfdf5;
+      }
+
+      .compare h3 {
+        margin: 0 0 10px;
+        font-size: 19px;
+      }
+
+      .compare p {
+        margin: 0;
+        color: var(--muted);
+      }
+
+      .install {
+        background: var(--ink);
+        color: #fff;
+      }
+
+      .install .section-lead {
+        color: #cbd5e1;
+      }
+
+      .install pre {
+        margin-top: 28px;
+        background: #0f141b;
+        border: 1px solid #384252;
+        border-radius: 8px;
+      }
+
+      footer {
+        padding: 28px 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      @media (max-width: 860px) {
+        .shell {
+          width: min(100% - 28px, 1120px);
+        }
+
+        .nav {
+          align-items: flex-start;
+          flex-direction: column;
+          padding: 14px 0;
+        }
+
+        nav {
+          flex-wrap: wrap;
+        }
+
+        .hero {
+          min-height: auto;
+          padding-top: 46px;
+        }
+
+        .hero-grid,
+        .split,
+        .flow {
+          grid-template-columns: 1fr;
+        }
+
+        h1 {
+          font-size: 42px;
+        }
+
+        .lead {
+          font-size: 18px;
+        }
+      }
+
+      @media (max-width: 520px) {
+        h1 {
+          font-size: 34px;
+        }
+
+        h2 {
+          font-size: 28px;
+        }
+
+        pre {
+          font-size: 13px;
+          padding: 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="shell nav">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 4v16" />
+              <path d="M6 10l6-6 6 6" />
+              <path d="M6 18h12" />
+            </svg>
+          </span>
+          <span>Agent Watchtower</span>
+        </div>
+        <nav aria-label="Primary navigation">
+          <a href="#how">How it works</a>
+          <a href="#install">Install</a>
+          <a href="https://github.com/un-n-smith/agent-watchtower">GitHub</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <div class="shell hero">
+        <div class="hero-grid">
+          <div>
+            <h1>Let coding agents resume without starting over.</h1>
+            <p class="lead">
+              Agent Watchtower is a tiny local CLI that records goals, next safe actions, run
+              receipts, and artifacts so interrupted AI coding work can continue cleanly.
+            </p>
+            <div class="actions">
+              <a class="button" href="https://github.com/un-n-smith/agent-watchtower">View on GitHub</a>
+              <a class="button secondary" href="#install">Install</a>
+            </div>
+            <p class="note">Local files only. No background service. No external account required.</p>
+          </div>
+
+          <div class="terminal" aria-label="Agent Watchtower terminal demo">
+            <div class="terminal-top">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </div>
+            <pre><code><span class="prompt">$</span> agent-watchtower init
+<span class="ok">initialized</span>: 1 goal, 1 open task
+
+<span class="prompt">$</span> agent-watchtower worker-status
+next_safe_action:
+  write one local artifact
+
+<span class="prompt">$</span> agent-watchtower worker-run
+completed_task
+artifact:
+  <span class="path">work-artifacts/task-watchtower-demo-first-step.md</span></code></pre>
+          </div>
+        </div>
+      </div>
+
+      <section id="how">
+        <div class="shell">
+          <h2>What it keeps after the session stops</h2>
+          <p class="section-lead">
+            Watchtower does not replace the agent. It gives the next session a small work notebook
+            that is easy for humans and agents to inspect.
+          </p>
+          <div class="flow">
+            <div class="step">
+              <strong>Goal</strong>
+              <p>The work the agent was trying to finish.</p>
+            </div>
+            <div class="step">
+              <strong>Next safe action</strong>
+              <p>The next bounded step that can be resumed without guessing.</p>
+            </div>
+            <div class="step">
+              <strong>Artifact path</strong>
+              <p>The last useful markdown output written by the worker run.</p>
+            </div>
+          </div>
+
+          <div class="split">
+            <div class="compare">
+              <h3>Before</h3>
+              <p>The terminal closed. The next agent window has no local trail and asks the human to explain again.</p>
+            </div>
+            <div class="compare after">
+              <h3>After</h3>
+              <p>The next session checks Watchtower state, finds the latest artifact, and continues from the recorded next action.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="install" class="install">
+        <div class="shell">
+          <h2>Try it in one minute</h2>
+          <p class="section-lead">
+            Install from GitHub, then run a disposable local demo. The generated runtime can be deleted
+            whenever you are done testing.
+          </p>
+          <pre><code>python3 -m pip install "agent-watchtower-core @ git+https://github.com/un-n-smith/agent-watchtower.git"
+
+ROOT="$(mktemp -d)"
+agent-watchtower --root "$ROOT" init
+agent-watchtower --root "$ROOT" worker-status
+agent-watchtower --root "$ROOT" worker-run
+agent-watchtower --root "$ROOT" artifact-path</code></pre>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="shell">
+        Agent Watchtower is alpha software. Feedback and interrupted-agent stories are welcome on GitHub Issues.
+      </div>
+    </footer>
+  </body>
+</html>

@@ -48,6 +48,17 @@ class CoreLoopTests(unittest.TestCase):
         self.assertIn("pip install .", packaging)
         self.assertIn("agent-watchtower --help", packaging)
 
+    def test_github_pages_site_files_are_present(self) -> None:
+        root = Path(__file__).resolve().parents[1]
+        index = (root / "index.html").read_text(encoding="utf-8")
+        cname = (root / "CNAME").read_text(encoding="utf-8").strip()
+
+        self.assertEqual(cname, "www.adgwmuren.top")
+        self.assertIn("<title>Agent Watchtower</title>", index)
+        self.assertIn("Let coding agents resume without starting over.", index)
+        self.assertIn("No background service", index)
+        self.assertIn("github.com/un-n-smith/agent-watchtower", index)
+
     def test_pyproject_maps_distribution_to_runtime_module(self) -> None:
         root = Path(__file__).resolve().parents[1]
         pyproject = tomllib.loads((root / "pyproject.toml").read_text(encoding="utf-8"))
